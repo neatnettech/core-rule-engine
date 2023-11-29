@@ -1,0 +1,3 @@
+spring:
+  datasource:
+    url: h2:mem:testdb

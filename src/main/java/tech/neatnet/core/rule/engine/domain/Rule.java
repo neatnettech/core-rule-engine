@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tech.neatnet.core.rule.engine.BaseRuleCategory;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,9 +21,4 @@ public class Rule {
     private String action;
     private List<String> inValues;
 
-    public enum RuleCategory {
-        LARGE,
-        ANOMALY,
-        PASS_THROUGH
-    }
 }

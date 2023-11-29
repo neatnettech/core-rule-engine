@@ -13,7 +13,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class CoreRuleEngineTest {
+class CoreRuleEngineAPITest {
 
     private CoreRuleEngine coreRuleEngine;
 
