@@ -8,11 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Document(collection = "ruleMatrices")
 public class RuleMatrix {
 
   private UUID id;
@@ -22,6 +24,7 @@ public class RuleMatrix {
   private int version;
   private String name;
   private String description;
-  private RuleCategory category;
+  private MatrixCategory category;
   private List<Rule> rules;
+  private Map<String, Object> results;
 }

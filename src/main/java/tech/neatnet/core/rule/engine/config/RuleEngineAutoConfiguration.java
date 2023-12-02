@@ -10,12 +10,18 @@ import tech.neatnet.core.rule.engine.cache.RuleMatrixCache;
 import tech.neatnet.core.rule.engine.cache.RuleMatrixCacheImpl;
 import tech.neatnet.core.rule.engine.core.CoreRuleEngine;
 import tech.neatnet.core.rule.engine.repositories.RuleMatrixRepository;
+import tech.neatnet.core.rule.engine.service.RuleMatrixService;
 
 @Configuration
 @ConditionalOnProperty(name = "ruleengine.enabled", havingValue = "true", matchIfMissing = true)
 @EnableMongoRepositories(basePackageClasses = RuleMatrixRepository.class)
 public class RuleEngineAutoConfiguration {
 
+  @Bean
+  @ConditionalOnMissingBean
+  public RuleMatrixService ruleMatrixService(RuleMatrixRepository ruleMatrixRepository) {
+    return new RuleMatrixService(ruleMatrixRepository);
+  }
   @Bean
   @ConditionalOnMissingBean
   public CoreRuleEngine coreRuleEngine() {
@@ -29,7 +35,7 @@ public class RuleEngineAutoConfiguration {
   }
 
   @Bean
-  public RuleEngine ruleEngineAPI(CoreRuleEngine coreRuleEngine, RuleMatrixCache ruleMatrixCache) {
-    return new RuleEngine(coreRuleEngine, ruleMatrixCache);
+  public RuleEngine ruleEngineAPI(CoreRuleEngine coreRuleEngine, RuleMatrixCache ruleMatrixCache, RuleMatrixService ruleMatrixService) {
+    return new RuleEngine(coreRuleEngine, ruleMatrixCache, ruleMatrixService);
   }
 }

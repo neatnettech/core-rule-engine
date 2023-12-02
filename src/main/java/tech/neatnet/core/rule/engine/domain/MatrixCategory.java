@@ -1,6 +1,6 @@
 package tech.neatnet.core.rule.engine.domain;
 
-public enum RuleCategory implements BaseRuleCategory {
+public enum MatrixCategory implements BaseRuleCategory {
 
   DUMMY_SIGNAL;
 

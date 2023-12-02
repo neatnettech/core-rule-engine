@@ -11,25 +11,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class CoreRuleEngine {
-
-  /**
-   * Evaluates the condition for a given rule.
-   *
-   * @param condition The condition as an MVEL expression.
-   * @param data      The input variables for the rule.
-   * @return The result of the condition evaluation.
-   */
-  public boolean evaluateCondition(String condition, Map<String, Object> data) {
-    Serializable compiledCondition;
-    try {
-      compiledCondition = MVEL.compileExpression(condition);
-      return (boolean) MVEL.executeExpression(compiledCondition, data);
-    } catch (Exception e) {
-      log.error("Failed to evaluate condition: {}", condition, e);
-      throw new RuntimeException("Failed to evaluate condition", e);
-    }
-  }
-
   /**
    * Evaluates the condition for a given rule.
    *
@@ -39,10 +20,11 @@ public class CoreRuleEngine {
    * @return The result of the condition evaluation.
    */
   public boolean evaluateCondition(String condition, Map<String, Object> data,
-      List<String> inValues) {
+      Optional<List<String>> inValues) {
     Serializable compiledCondition;
     try {
-      data.put("inValues", inValues);
+      inValues.ifPresent(values -> data.put("inValues", values));
+
       compiledCondition = MVEL.compileExpression(condition);
       return (boolean) MVEL.executeExpression(compiledCondition, data);
     } catch (Exception e) {

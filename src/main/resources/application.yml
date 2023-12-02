@@ -1,3 +1,7 @@
 spring:
-  datasource:
-    url: h2:mem:testdb
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/rule-engine
+      username: sa
+      password: sa
+      authentication-database: admin

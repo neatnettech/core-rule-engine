@@ -28,7 +28,7 @@ class CoreRuleEngineTest {
     String condition = "value == true";
     Map<String, Object> data = new HashMap<>();
     data.put("value", true);
-    assertTrue(coreRuleEngine.evaluateCondition(condition, data));
+    assertTrue(coreRuleEngine.evaluateCondition(condition, data, Optional.empty()));
   }
 
   @Test
@@ -36,7 +36,7 @@ class CoreRuleEngineTest {
     String condition = "value == false";
     Map<String, Object> data = new HashMap<>();
     data.put("value", true);
-    assertFalse(coreRuleEngine.evaluateCondition(condition, data));
+    assertFalse(coreRuleEngine.evaluateCondition(condition, data, Optional.empty()));
   }
 
   @Test
