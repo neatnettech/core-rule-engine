@@ -26,6 +26,11 @@
       <groupId>org.ehcache</groupId>
       <version>${ehcache.version}</version>
     </dependency>
+    <dependency>
+      <groupId>javax.cache</groupId>
+      <artifactId>cache-api</artifactId>
+      <version>1.1.1</version>
+    </dependency>
     <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
     <dependency>
       <artifactId>jaxb-api</artifactId>
