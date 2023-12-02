@@ -1,6 +1,7 @@
 package tech.neatnet.core.rule.engine.config;
 
 import java.time.Duration;
+import java.util.Collection;
 import javax.cache.CacheManager;
 import javax.cache.Caching;
 import javax.cache.spi.CachingProvider;
@@ -23,15 +24,15 @@ public class CacheConfiguration {
     CachingProvider provider = Caching.getCachingProvider();
     CacheManager cacheManager = provider.getCacheManager();
 
-    CacheConfigurationBuilder<String, String> configuration =
+    CacheConfigurationBuilder<String, Collection> configuration =
         CacheConfigurationBuilder.newCacheConfigurationBuilder(
                 String.class,
-                String.class,
+                Collection.class,
                 ResourcePoolsBuilder
                     .newResourcePoolsBuilder().offheap(1, MemoryUnit.MB))
             .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(20)));
 
-    javax.cache.configuration.Configuration<String, String> stringDoubleConfiguration =
+    javax.cache.configuration.Configuration<String, Collection> stringDoubleConfiguration =
         Eh107Configuration.fromEhcacheCacheConfiguration(configuration);
 
     cacheManager.createCache("ruleMatrices", stringDoubleConfiguration);

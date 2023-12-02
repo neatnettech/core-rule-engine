@@ -19,7 +19,7 @@ public class RuleMatrixCacheImpl implements RuleMatrixCache {
   }
 
   @Override
-  @Cacheable(value = "ruleMatrices")
+  @Cacheable(value = "ruleMatrices", key = "'allRuleMatrices'")
   public Collection<RuleMatrix> getAllRuleMatrices() {
     log.info("Loading all RuleMatrices from DB");
     return ruleMatrixRepository.findAll();
