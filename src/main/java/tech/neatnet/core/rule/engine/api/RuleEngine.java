@@ -77,7 +77,15 @@ public class RuleEngine {
 
     Rule rule1 = Rule.builder()
         .condition("value > 10")
-        .inValues(Arrays.asList("10", "20"))
+        .build();
+
+    Rule rule2 = Rule.builder()
+        .condition("value2 == 'test'")
+        .build();
+
+    Rule rule3 = Rule.builder()
+        .condition("value3 in inValues")
+        .inValues(Arrays.asList("test1", "test2"))
         .build();
 
     RuleMatrix sampleMatrix = RuleMatrix.builder()
@@ -89,9 +97,9 @@ public class RuleEngine {
         .name("Sample Matrix")
         .description("This is a sample rule matrix")
         .category(MatrixCategory.DUMMY_SIGNAL)
-        .rules(Collections.singletonList(rule1))
+        .rules(List.of(rule1, rule2, rule3))
         .results(new HashMap<String, Object>() {{
-          put("signal", "value");
+          put("signal", "valid");
         }})
         .build();
 

@@ -20,7 +20,7 @@ public class CoreRuleEngine {
    * @return The result of the condition evaluation.
    */
   public boolean evaluateCondition(String condition, Map<String, Object> data,
-      Optional<List<String>> inValues) {
+      Optional<List<Object>> inValues) {
     Serializable compiledCondition;
     try {
       inValues.ifPresent(values -> data.put("inValues", values));
@@ -32,7 +32,6 @@ public class CoreRuleEngine {
       throw new RuntimeException("Failed to evaluate condition", e);
     }
   }
-
   /**
    * Executes the action for a given rule.
    *
@@ -48,6 +47,21 @@ public class CoreRuleEngine {
     } catch (Exception e) {
       log.error("Failed to execute action: {}", action, e);
       throw new RuntimeException("Failed to execute action", e);
+    }
+  }
+
+
+  public boolean evaluate(String condition, Map<String, Object> data,
+      Optional<String[]> inValues) {
+    Serializable compiledCondition;
+    try {
+      inValues.ifPresent(values -> data.put("inValues", values));
+
+      compiledCondition = MVEL.compileExpression(condition);
+      return (boolean) MVEL.executeExpression(compiledCondition, data);
+    } catch (Exception e) {
+      log.error("Failed to evaluate condition: {}", condition, e);
+      throw new RuntimeException("Failed to evaluate condition", e);
     }
   }
 }

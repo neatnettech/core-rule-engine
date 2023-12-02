@@ -1,5 +1,6 @@
 package tech.neatnet.core.rule.engine.domain;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
@@ -15,8 +17,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "ruleMatrices")
-public class RuleMatrix {
+public class RuleMatrix implements Serializable {
 
+  @Transient
+  private static final long serialVersionUID = 1L;
   private UUID id;
   private Instant dateCreated;
   private Instant dateModified;

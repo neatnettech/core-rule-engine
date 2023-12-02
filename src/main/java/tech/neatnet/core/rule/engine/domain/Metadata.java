@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Metadata {
+public class Metadata{
 
   private Map<String, Object> inputVariables;
   private Instant startTime;
