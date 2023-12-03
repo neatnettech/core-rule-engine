@@ -28,17 +28,18 @@ public class RuleEngine {
   private final CoreRuleEngine coreRuleEngine;
   private final RuleMatrixCache ruleMatrixCache;
   private final RuleMatrixService ruleMatrixService;
+  private final Collection<RuleMatrix> ruleMatrices;
 
   public RuleEngine(CoreRuleEngine coreRuleEngine, RuleMatrixCache ruleMatrixCache,
       RuleMatrixService ruleMatrixService) {
     this.coreRuleEngine = coreRuleEngine;
     this.ruleMatrixCache = ruleMatrixCache;
     this.ruleMatrixService = ruleMatrixService;
+    this.ruleMatrices = ruleMatrixCache.getAllRuleMatrices();
   }
 
   public Optional<List<RuleExecutionResult>> evaluateAllRules(Map<String, Object> inputVariables) {
     List<RuleExecutionResult> results = new ArrayList<>();
-    Collection<RuleMatrix> ruleMatrices = ruleMatrixCache.getAllRuleMatrices();
 
     for (RuleMatrix matrix : ruleMatrices) {
       boolean allConditionsMet = true;
@@ -71,40 +72,6 @@ public class RuleEngine {
     }
 
     return Optional.of(results);
-  }
-
-  public RuleMatrix saveRuleMatrix() {
-
-    Rule rule1 = Rule.builder()
-        .condition("value > 10")
-        .build();
-
-    Rule rule2 = Rule.builder()
-        .condition("value2 == 'test'")
-        .build();
-
-    Rule rule3 = Rule.builder()
-        .condition("value3 in inValues")
-        .inValues(Arrays.asList("test1", "test2"))
-        .build();
-
-    RuleMatrix sampleMatrix = RuleMatrix.builder()
-        .id(UUID.randomUUID())
-        .dateCreated(Instant.now())
-        .dateModified(Instant.now())
-        .modifiedBy("user123")
-        .version(1)
-        .name("Sample Matrix")
-        .description("This is a sample rule matrix")
-        .category(MatrixCategory.DUMMY_SIGNAL)
-        .rules(List.of(rule1, rule2, rule3))
-        .results(new HashMap<String, Object>() {{
-          put("signal", "valid");
-        }})
-        .build();
-
-    ruleMatrixService.saveRuleMatrix(sampleMatrix);
-    return ruleMatrixService.saveRuleMatrix(sampleMatrix);
   }
 }
 

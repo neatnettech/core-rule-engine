@@ -124,4 +124,33 @@ class CoreRuleEngineTest {
 
     assertTrue(actualMessage.contains(expectedMessage));
   }
+
+
+  @Test
+  @DisplayName("Test evaluateCondition with multiple rules")
+  void evaluateConditionMultipleRules() {
+
+    Rule rule1 = Rule.builder()
+        .condition("value1 > 10")
+        .build();
+
+    Rule rule2 = Rule.builder()
+        .condition("value2 == 'test'")
+        .build();
+
+    Rule rule3 = Rule.builder()
+        .condition("inValues contains value3")
+        .inValues(Arrays.asList("test1", "test2"))
+        .build();
+
+    Map<String, Object> context = new HashMap<>();
+    context.put("value1", 11);
+    context.put("value2", "test");
+    context.put("value3", "test1");
+
+    assertTrue(coreRuleEngine.evaluateCondition(rule1.getCondition(), context, Optional.empty()));
+    assertTrue(coreRuleEngine.evaluateCondition(rule2.getCondition(), context, Optional.empty()));
+    assertTrue(coreRuleEngine.evaluateCondition(rule3.getCondition(), context,
+        Optional.of(rule3.getInValues())));
+  }
 }
