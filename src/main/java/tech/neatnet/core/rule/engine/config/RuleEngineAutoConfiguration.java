@@ -22,6 +22,7 @@ public class RuleEngineAutoConfiguration {
   public RuleMatrixService ruleMatrixService(RuleMatrixRepository ruleMatrixRepository) {
     return new RuleMatrixService(ruleMatrixRepository);
   }
+
   @Bean
   @ConditionalOnMissingBean
   public CoreRuleEngine coreRuleEngine() {
@@ -35,7 +36,8 @@ public class RuleEngineAutoConfiguration {
   }
 
   @Bean
-  public RuleEngine ruleEngineAPI(CoreRuleEngine coreRuleEngine, RuleMatrixCache ruleMatrixCache, RuleMatrixService ruleMatrixService) {
+  public RuleEngine ruleEngineAPI(CoreRuleEngine coreRuleEngine, RuleMatrixCache ruleMatrixCache,
+      RuleMatrixService ruleMatrixService) {
     return new RuleEngine(coreRuleEngine, ruleMatrixCache, ruleMatrixService);
   }
 }

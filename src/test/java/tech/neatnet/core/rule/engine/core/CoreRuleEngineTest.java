@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,11 +23,21 @@ class CoreRuleEngineTest {
 
   private CoreRuleEngine coreRuleEngine;
 
+  public static void evaluateRule(Rule rule, Map<String, Object> context) {
+    Serializable compiledExpression = MVEL.compileExpression(rule.getCondition());
+    boolean result = MVEL.executeExpression(compiledExpression, context, Boolean.class);
+
+    if (result) {
+      System.out.println("Condition met. Performing action: " + rule.getAction());
+    } else {
+      System.out.println("Condition not met.");
+    }
+  }
+
   @BeforeEach
   void setUp() {
     coreRuleEngine = new CoreRuleEngine();
   }
-
 
   @Test
   @DisplayName("Test evaluateCondition with inValues matching")
@@ -60,17 +69,6 @@ class CoreRuleEngineTest {
 
     assertFalse(coreRuleEngine.evaluateCondition(rule.getCondition(), context,
         Optional.of(rule.getInValues())));
-  }
-
-  public static void evaluateRule(Rule rule, Map<String, Object> context) {
-    Serializable compiledExpression = MVEL.compileExpression(rule.getCondition());
-    boolean result = MVEL.executeExpression(compiledExpression, context, Boolean.class);
-
-    if (result) {
-      System.out.println("Condition met. Performing action: " + rule.getAction());
-    } else {
-      System.out.println("Condition not met.");
-    }
   }
 
   @Test

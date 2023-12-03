@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class CoreRuleEngine {
+
   /**
    * Evaluates the condition for a given rule.
    *
@@ -32,6 +33,7 @@ public class CoreRuleEngine {
       throw new RuntimeException("Failed to evaluate condition", e);
     }
   }
+
   /**
    * Executes the action for a given rule.
    *

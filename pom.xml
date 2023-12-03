@@ -27,9 +27,9 @@
       <version>${ehcache.version}</version>
     </dependency>
     <dependency>
-      <groupId>javax.cache</groupId>
       <artifactId>cache-api</artifactId>
-      <version>1.1.1</version>
+      <groupId>javax.cache</groupId>
+      <version>${cache.api.version}</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
     <dependency>
@@ -78,6 +78,7 @@
     <mockito.jupiter.version>5.7.0</mockito.jupiter.version>
     <mongodb.version>3.1.5</mongodb.version>
     <mvel.version>2.5.0.Final</mvel.version>
+    <cache.api.version>1.1.1</cache.api.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
