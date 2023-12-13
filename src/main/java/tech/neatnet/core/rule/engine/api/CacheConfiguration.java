@@ -1,4 +1,4 @@
-package tech.neatnet.core.rule.engine.config;
+package tech.neatnet.core.rule.engine.api;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 
 @EnableCaching
 @Configuration
-public class CacheConfiguration {
+class CacheConfiguration {
 
   @Bean
   public CacheManager ehCacheManager() {

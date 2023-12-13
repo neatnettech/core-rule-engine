@@ -1,4 +1,4 @@
-package tech.neatnet.core.rule.engine.core;
+package tech.neatnet.core.rule.engine.api;
 
 import java.io.Serializable;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class CoreRuleEngine {
+class CoreRuleEngine {
 
   /**
    * Evaluates the condition for a given rule.

@@ -1,13 +1,13 @@
-package tech.neatnet.core.rule.engine.service;
+package tech.neatnet.core.rule.engine.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tech.neatnet.core.rule.engine.domain.RuleMatrix;
-import tech.neatnet.core.rule.engine.repositories.RuleMatrixRepository;
+import tech.neatnet.core.rule.engine.api.RuleMatrixRepository;
 
 @Slf4j
 @Service
-public class RuleMatrixService {
+class RuleMatrixService {
 
   private final RuleMatrixRepository ruleMatrixRepository;
 

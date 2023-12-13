@@ -1,4 +1,4 @@
-package tech.neatnet.core.rule.engine.core;
+package tech.neatnet.core.rule.engine.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mvel2.MVEL;
+import tech.neatnet.core.rule.engine.api.CoreRuleEngine;
 import tech.neatnet.core.rule.engine.domain.Rule;
 
 @ExtendWith(MockitoExtension.class)

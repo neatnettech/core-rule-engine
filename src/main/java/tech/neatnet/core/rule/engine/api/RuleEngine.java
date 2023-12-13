@@ -10,13 +10,10 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import tech.neatnet.core.rule.engine.cache.RuleMatrixCache;
-import tech.neatnet.core.rule.engine.core.CoreRuleEngine;
 import tech.neatnet.core.rule.engine.domain.Metadata;
 import tech.neatnet.core.rule.engine.domain.Rule;
 import tech.neatnet.core.rule.engine.domain.RuleExecutionResult;
 import tech.neatnet.core.rule.engine.domain.RuleMatrix;
-import tech.neatnet.core.rule.engine.service.RuleMatrixService;
 
 @Slf4j
 @Service

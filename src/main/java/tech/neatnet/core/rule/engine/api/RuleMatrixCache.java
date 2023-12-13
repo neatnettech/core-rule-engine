@@ -1,4 +1,4 @@
-package tech.neatnet.core.rule.engine.cache;
+package tech.neatnet.core.rule.engine.api;
 
 import java.util.Collection;
 import org.springframework.cache.annotation.CacheEvict;

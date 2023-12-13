@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import tech.neatnet.core.rule.engine.domain.MatrixCategory;
 import tech.neatnet.core.rule.engine.domain.Rule;
 import tech.neatnet.core.rule.engine.domain.RuleMatrix;
-import tech.neatnet.core.rule.engine.service.RuleMatrixService;
 
 @Slf4j
 @Service

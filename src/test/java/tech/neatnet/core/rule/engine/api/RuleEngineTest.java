@@ -21,12 +21,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import tech.neatnet.core.rule.engine.cache.RuleMatrixCache;
-import tech.neatnet.core.rule.engine.core.CoreRuleEngine;
 import tech.neatnet.core.rule.engine.domain.Rule;
 import tech.neatnet.core.rule.engine.domain.RuleExecutionResult;
 import tech.neatnet.core.rule.engine.domain.RuleMatrix;
-import tech.neatnet.core.rule.engine.service.RuleMatrixService;
 
 @ExtendWith(MockitoExtension.class)
 class RuleEngineTest {

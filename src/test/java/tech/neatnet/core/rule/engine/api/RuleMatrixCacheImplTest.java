@@ -1,4 +1,4 @@
-package tech.neatnet.core.rule.engine.cache;
+package tech.neatnet.core.rule.engine.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -12,8 +12,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tech.neatnet.core.rule.engine.api.RuleMatrixCacheImpl;
 import tech.neatnet.core.rule.engine.domain.RuleMatrix;
-import tech.neatnet.core.rule.engine.repositories.RuleMatrixRepository;
+import tech.neatnet.core.rule.engine.api.RuleMatrixRepository;
 
 @ExtendWith(MockitoExtension.class)
 class RuleMatrixCacheImplTest {

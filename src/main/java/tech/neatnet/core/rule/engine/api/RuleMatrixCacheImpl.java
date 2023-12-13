@@ -1,4 +1,4 @@
-package tech.neatnet.core.rule.engine.cache;
+package tech.neatnet.core.rule.engine.api;
 
 import java.util.Collection;
 import lombok.extern.slf4j.Slf4j;
@@ -6,11 +6,10 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import tech.neatnet.core.rule.engine.domain.RuleMatrix;
-import tech.neatnet.core.rule.engine.repositories.RuleMatrixRepository;
 
 @Slf4j
 @Component
-public class RuleMatrixCacheImpl implements RuleMatrixCache {
+class RuleMatrixCacheImpl implements RuleMatrixCache {
 
   private final RuleMatrixRepository ruleMatrixRepository;
 
