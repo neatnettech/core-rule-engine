@@ -14,57 +14,19 @@ public class RuleEngine {
     private final CoreRuleEngine coreRuleEngine;
     private final RuleCache ruleCache;
     private final RuleService ruleService;
-    private final Collection<Rule> ruleMatrices;
+    private final Collection<Rule> rules;
 
     public RuleEngine(CoreRuleEngine coreRuleEngine, RuleCache ruleCache,
                       RuleService ruleService) {
         this.coreRuleEngine = coreRuleEngine;
         this.ruleCache = ruleCache;
         this.ruleService = ruleService;
-        this.ruleMatrices = ruleCache.getAllRules();
+        this.rules = ruleCache.getAllRules();
     }
-
-    public List<Optional<RuleExecutionResult>> evaluateDecisionTrees(List<DecisionTree> decisionTrees, Map<String, Object> inputVariables) {
-        List<Optional<RuleExecutionResult>> results = new ArrayList<>();
-
-        for (DecisionTree decisionTree : decisionTrees) {
-            // Start from the root of the decision tree
-            RuleTree currentNode = decisionTree.getRules().get(0);
-
-            // Traverse the decision tree
-            while (!currentNode.getChildren().isEmpty()) {
-                // Evaluate the condition using MVEL from CoreRuleEngine
-                boolean conditionResult = coreRuleEngine.evaluateCondition(currentNode.getCondition(), inputVariables, Optional.empty());
-
-                // Move to the next node based on the condition result
-                currentNode = conditionResult ? currentNode.getChildren().get(0) : currentNode.getChildren().get(1);
-            }
-
-            // The current node is a leaf node, so it contains the result of the decision tree execution
-            Map<String, Object> decisionTreeResults = currentNode.getResults();
-
-            // Build the rule execution result
-            RuleExecutionResult result = RuleExecutionResult.builder()
-                    .metadata(Metadata.builder()
-                            .inputVariables(new HashMap<>(inputVariables)) // Defensive copy
-                            .startTime(Instant.now())
-                            .endTime(Instant.now())
-                            .build())
-                    .rule(null)
-                    .ruleTree(currentNode)
-                    .results(decisionTreeResults)
-                    .build();
-
-            results.add(Optional.of(result));
-        }
-
-        return results;
-    }
-
-    public Optional<List<RuleExecutionResult>> evaluateDecisionMatrices(Map<String, Object> inputVariables) {
+    public Optional<List<RuleExecutionResult>> evaluateRules(Map<String, Object> inputVariables) {
         List<RuleExecutionResult> results = new ArrayList<>();
 
-        for (Rule matrix : ruleMatrices) {
+        for (Rule matrix : rules) {
             boolean allConditionsMet = true;
             Metadata metadata = Metadata.builder()
                     .inputVariables(new HashMap<>(inputVariables)) // Defensive copy
