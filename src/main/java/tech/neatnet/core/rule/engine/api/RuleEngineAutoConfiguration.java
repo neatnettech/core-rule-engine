@@ -32,8 +32,7 @@ class RuleEngineAutoConfiguration {
   }
 
   @Bean
-  public RuleEngine ruleEngineAPI(CoreRuleEngine coreRuleEngine, RuleCache ruleCache,
-      RuleService ruleService) {
-    return new RuleEngine(coreRuleEngine, ruleCache, ruleService);
+  public RuleEngine ruleEngine(CoreRuleEngine coreRuleEngine, RuleCache ruleCache) {
+    return new RuleEngine(coreRuleEngine, ruleCache);
   }
 }

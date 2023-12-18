@@ -1,44 +1,36 @@
 package tech.neatnet.core.rule.engine.api;
 
-import java.time.Duration;
-import java.util.Collection;
-import javax.cache.CacheManager;
-import javax.cache.Caching;
-import javax.cache.spi.CachingProvider;
-import org.ehcache.config.builders.CacheConfigurationBuilder;
-import org.ehcache.config.builders.ExpiryPolicyBuilder;
-import org.ehcache.config.builders.ResourcePoolsBuilder;
-import org.ehcache.config.units.MemoryUnit;
-import org.ehcache.jsr107.Eh107Configuration;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.cache.CacheManager;
+import javax.cache.Caching;
+import javax.cache.spi.CachingProvider;
+import java.time.Duration;
+import java.util.Collection;
+
+import static org.ehcache.config.builders.CacheConfigurationBuilder.newCacheConfigurationBuilder;
+import static org.ehcache.config.builders.ExpiryPolicyBuilder.timeToLiveExpiration;
+import static org.ehcache.config.builders.ResourcePoolsBuilder.newResourcePoolsBuilder;
+import static org.ehcache.config.units.MemoryUnit.MB;
+import static org.ehcache.jsr107.Eh107Configuration.fromEhcacheCacheConfiguration;
 
 @EnableCaching
 @Configuration
 class CacheConfiguration {
 
-  private static final String RULES_CACHE = "rules";
+    private static final String RULES_CACHE = "rules";
 
-  @Bean
-  public CacheManager ehCacheManager() {
-    CachingProvider provider = Caching.getCachingProvider();
-    CacheManager cacheManager = provider.getCacheManager();
+    @Bean
+    public CacheManager ehCacheManager() {
+        CacheManager cacheManager = Caching.getCachingProvider().getCacheManager();
 
-    CacheConfigurationBuilder<String, Collection> configuration =
-        CacheConfigurationBuilder.newCacheConfigurationBuilder(
-                String.class,
-                Collection.class,
-                ResourcePoolsBuilder
-                    .newResourcePoolsBuilder().offheap(1, MemoryUnit.MB))
-            .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(20)));
+        cacheManager.createCache(RULES_CACHE, fromEhcacheCacheConfiguration(
+                newCacheConfigurationBuilder(String.class, Collection.class, newResourcePoolsBuilder().offheap(1, MB))
+                        .withExpiry(timeToLiveExpiration(Duration.ofSeconds(20)))
+        ));
 
-    javax.cache.configuration.Configuration<String, Collection> stringDoubleConfiguration =
-        Eh107Configuration.fromEhcacheCacheConfiguration(configuration);
-
-    cacheManager.createCache(RULES_CACHE, stringDoubleConfiguration);
-    return cacheManager;
-
-  }
+        return cacheManager;
+    }
 }

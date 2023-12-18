@@ -35,9 +35,6 @@ class RuleEngineTest {
   @Mock
   private RuleCache ruleCache;
 
-  @Mock
-  private RuleService ruleService;
-
   private RuleEngine ruleEngine;
   private Rule matrixRuleValueEqual;
   private Rule matrixRuleValueGreater;
@@ -100,7 +97,7 @@ class RuleEngineTest {
     when(ruleCache.getAllDecisionTrees()).thenReturn(
         Collections.singletonList(decisionTreeRuleValueEqual));
 
-    ruleEngine = new RuleEngine(coreRuleEngine, ruleCache, ruleService);
+    ruleEngine = new RuleEngine(coreRuleEngine, ruleCache);
   }
 
   @Test
