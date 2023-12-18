@@ -5,8 +5,3 @@ spring:
       username: sa
       password: sa
       authentication-database: admin
-
-
-  cache:
-    jcache:
-      config: classpath:ehcache.xml
