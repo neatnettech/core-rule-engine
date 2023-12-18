@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import tech.neatnet.core.rule.engine.domain.Condition;
 import tech.neatnet.core.rule.engine.domain.Rule;
 import tech.neatnet.core.rule.engine.domain.RuleExecutionResult;
+import tech.neatnet.core.rule.engine.domain.TreeExecutionResult;
 
 import java.util.*;
 
@@ -29,26 +30,27 @@ class RuleEngineTest {
     private RuleService ruleService;
 
     private RuleEngine ruleEngine;
-    private Rule ruleValueEqual;
-    private Rule ruleValueGreater;
-    private Rule ruleMultipleConditions;
+    private Rule matrixRuleValueEqual;
+    private Rule matrixRuleValueGreater;
+    private Rule matrixRuleMultipleConditions;
+    private Rule decisionTreeRuleValueEqual;
 
     @BeforeEach
     public void setUp() {
-        ruleValueEqual = Rule.builder()
+        matrixRuleValueEqual = Rule.builder()
                 .conditions(Collections.singletonList(
                         Condition.builder()
                                 .condition("value1 == 'ABC'")
                                 .build()))
                 .build();
 
-        ruleValueGreater = Rule.builder()
+        matrixRuleValueGreater = Rule.builder()
                 .conditions(Collections.singletonList(
                         Condition.builder()
                                 .condition("value2 > 100")
                                 .build()))
                 .build();
-        ruleMultipleConditions = Rule.builder()
+        matrixRuleMultipleConditions = Rule.builder()
                 .conditions(List.of(Condition.builder()
                                         .condition("value1 == 'ABC'")
                                         .build()
@@ -65,8 +67,27 @@ class RuleEngineTest {
 
                 )
                 .build();
+
+        decisionTreeRuleValueEqual = Rule.builder()
+                .conditions(Collections.singletonList(
+                        Condition.builder()
+                                .condition("value1 == 'ABC'")
+                                .trueBranch(
+                                        Condition.builder()
+                                                .condition("value2 > 100")
+                                                .action("hit == true")
+                                                .build())
+                                .falseBranch(
+                                        Condition.builder()
+                                                .condition("value2 < 100")
+                                                .action("hit == false")
+                                                .build())
+                                .build()))
+                .build();
+
         // When ruleCache.getAllRules() is called, return the test rules
-        when(ruleCache.getAllRules()).thenReturn(Arrays.asList(ruleValueEqual, ruleValueGreater, ruleMultipleConditions));
+        when(ruleCache.getAllRules()).thenReturn(Arrays.asList(matrixRuleValueEqual, matrixRuleValueGreater, matrixRuleMultipleConditions));
+        when(ruleCache.getAllDecisionTrees()).thenReturn(Collections.singletonList(decisionTreeRuleValueEqual));
 
         ruleEngine = new RuleEngine(coreRuleEngine, ruleCache, ruleService);
     }
@@ -155,6 +176,28 @@ class RuleEngineTest {
         List<RuleExecutionResult> results = optionalResults.get();
         assertFalse(results.isEmpty());
         assertEquals(3, results.size());
+    }
+
+    @Test
+    @DisplayName("Test simple decision tree evaluation")
+    void testEvaluateDecisionTree() {
+
+        when(coreRuleEngine.evaluateCondition(anyString(), anyMap(), any())).thenReturn(true);
+
+        // Define input variables
+        Map<String, Object> inputVariables = new HashMap<>();
+        inputVariables.put("value1", "ABC");
+        inputVariables.put("value2", 101);
+        inputVariables.put("value3", "2");
+
+        // Evaluate all rules
+        List<TreeExecutionResult> results = ruleEngine.evaluateMultipleDecisionTrees(inputVariables);
+
+        // Assertions
+        assertFalse(results.isEmpty());
+        assertEquals(1, results.size());
+        assertEquals("action1", results.get(0).getResults().get("result"));
+
     }
 
 }

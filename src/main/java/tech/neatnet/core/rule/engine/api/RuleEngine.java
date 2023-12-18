@@ -15,6 +15,7 @@ public class RuleEngine {
     private final RuleCache ruleCache;
     private final RuleService ruleService;
     private final Collection<Rule> rules;
+    private final Collection<Rule> decisionTrees;
 
     public RuleEngine(CoreRuleEngine coreRuleEngine, RuleCache ruleCache,
                       RuleService ruleService) {
@@ -22,7 +23,9 @@ public class RuleEngine {
         this.ruleCache = ruleCache;
         this.ruleService = ruleService;
         this.rules = ruleCache.getAllRules();
+        this.decisionTrees = ruleCache.getAllDecisionTrees();
     }
+
     public Optional<List<RuleExecutionResult>> evaluateRules(Map<String, Object> inputVariables) {
         List<RuleExecutionResult> results = new ArrayList<>();
 
@@ -57,5 +60,40 @@ public class RuleEngine {
         }
 
         return Optional.of(results);
+    }
+
+    public List<TreeExecutionResult> evaluateMultipleDecisionTrees(Map<String, Object> inputVariables) {
+        List<TreeExecutionResult> results = new ArrayList<>();
+        for (Rule root : decisionTrees) {
+            for (Condition condition : root.getConditions()) {
+                if (coreRuleEngine.evaluateCondition(condition.getCondition(), inputVariables,
+                        Optional.ofNullable(condition.getInValues()))) {
+                    results.add(evaluateDecisionTree(inputVariables, condition, root));
+                }
+            }
+        }
+        return results;
+    }
+
+    public TreeExecutionResult evaluateDecisionTree(Map<String, Object> inputVariables, Condition root, Rule rule) {
+        TreeExecutionResult treeExecutionResult = new TreeExecutionResult();
+        treeExecutionResult.setCondition(root);
+
+        if (root.isLeaf()) {
+            Map<String, Object> results = new HashMap<>();
+            results.put("result", coreRuleEngine.executeAction(root.getAction(), inputVariables));
+            treeExecutionResult.setResults(results);
+            treeExecutionResult.setRule(rule);
+            return treeExecutionResult;
+        }
+
+        boolean conditionResult = coreRuleEngine.evaluateCondition(root.getCondition(), inputVariables,
+                Optional.ofNullable(root.getInValues()));
+
+        if (conditionResult) {
+            return evaluateDecisionTree(inputVariables, root.getTrueBranch(), rule);
+        } else {
+            return evaluateDecisionTree(inputVariables, root.getFalseBranch(), rule);
+        }
     }
 }

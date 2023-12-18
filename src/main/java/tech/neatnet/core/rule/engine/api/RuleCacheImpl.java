@@ -32,4 +32,16 @@ class RuleCacheImpl implements RuleCache {
         getAllRules();
     }
 
+    @Override
+    public Collection<Rule> getAllDecisionTrees() {
+        log.info("Loading all Decision Trees from DB");
+        return ruleRepository.findAll();
+    }
+
+    @Override
+    public void reloadDecisionTrees() {
+        log.info("Reloading all Decision Trees from DB");
+        getAllDecisionTrees();
+    }
+
 }

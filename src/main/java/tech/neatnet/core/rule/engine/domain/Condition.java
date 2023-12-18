@@ -20,5 +20,11 @@ public class Condition implements Serializable {
     private String condition;
     private String action;
     private List<Object> inValues;
+    private Condition trueBranch;
+    private Condition falseBranch;
+
+    public boolean isLeaf() {
+        return trueBranch == null && falseBranch == null;
+    }
 
 }
