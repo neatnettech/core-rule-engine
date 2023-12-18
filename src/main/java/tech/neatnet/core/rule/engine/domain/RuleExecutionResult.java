@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class RuleExecutionResult {
 
   private Metadata metadata;
-  private RuleMatrix ruleMatrix;
+  private Rule rule;
   private Map<String, Object> results;
 }
 

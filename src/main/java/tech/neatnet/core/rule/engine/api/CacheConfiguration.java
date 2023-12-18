@@ -19,6 +19,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 class CacheConfiguration {
 
+  private static final String RULES_CACHE = "rules";
+
   @Bean
   public CacheManager ehCacheManager() {
     CachingProvider provider = Caching.getCachingProvider();
@@ -35,7 +37,7 @@ class CacheConfiguration {
     javax.cache.configuration.Configuration<String, Collection> stringDoubleConfiguration =
         Eh107Configuration.fromEhcacheCacheConfiguration(configuration);
 
-    cacheManager.createCache("ruleMatrices", stringDoubleConfiguration);
+    cacheManager.createCache(RULES_CACHE, stringDoubleConfiguration);
     return cacheManager;
 
   }

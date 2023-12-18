@@ -10,13 +10,13 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @Configuration
 @ConditionalOnProperty(name = "ruleengine.enabled", havingValue = "true", matchIfMissing = true)
 @Import(CacheConfiguration.class)
-@EnableMongoRepositories(basePackageClasses = RuleMatrixRepository.class)
+@EnableMongoRepositories(basePackageClasses = RuleRepository.class)
 class RuleEngineAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public RuleMatrixService ruleMatrixService(RuleMatrixRepository ruleMatrixRepository) {
-    return new RuleMatrixService(ruleMatrixRepository);
+  public RuleService ruleMatrixService(RuleRepository ruleRepository) {
+    return new RuleService(ruleRepository);
   }
 
   @Bean
@@ -27,13 +27,13 @@ class RuleEngineAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public RuleMatrixCache ruleMatrixCache(RuleMatrixRepository ruleMatrixRepository) {
-    return new RuleMatrixCacheImpl(ruleMatrixRepository);
+  public RuleCache ruleMatrixCache(RuleRepository ruleRepository) {
+    return new RuleCacheImpl(ruleRepository);
   }
 
   @Bean
-  public RuleEngine ruleEngineAPI(CoreRuleEngine coreRuleEngine, RuleMatrixCache ruleMatrixCache,
-      RuleMatrixService ruleMatrixService) {
-    return new RuleEngine(coreRuleEngine, ruleMatrixCache, ruleMatrixService);
+  public RuleEngine ruleEngineAPI(CoreRuleEngine coreRuleEngine, RuleCache ruleCache,
+      RuleService ruleService) {
+    return new RuleEngine(coreRuleEngine, ruleCache, ruleService);
   }
 }
