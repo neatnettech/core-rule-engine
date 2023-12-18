@@ -65,6 +65,7 @@ public class RuleEngine {
     public List<TreeExecutionResult> evaluateMultipleDecisionTrees(Map<String, Object> inputVariables) {
         List<TreeExecutionResult> results = new ArrayList<>();
         for (Rule root : decisionTrees) {
+            log.info("Evaluating decision tree: {}", root);
             for (Condition condition : root.getConditions()) {
                 if (coreRuleEngine.evaluateCondition(condition.getCondition(), inputVariables,
                         Optional.ofNullable(condition.getInValues()))) {
@@ -81,7 +82,9 @@ public class RuleEngine {
 
         if (root.isLeaf()) {
             Map<String, Object> results = new HashMap<>();
-            results.put("result", coreRuleEngine.executeAction(root.getAction(), inputVariables));
+            log.info("Evaluating action: {}", root.getAction());
+            Optional<Object> actionResult = coreRuleEngine.executeAction(root.getAction(), inputVariables);
+            actionResult.ifPresent(o -> results.put("result", o));
             treeExecutionResult.setResults(results);
             treeExecutionResult.setRule(rule);
             return treeExecutionResult;
