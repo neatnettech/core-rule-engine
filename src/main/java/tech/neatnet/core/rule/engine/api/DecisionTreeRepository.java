@@ -5,5 +5,5 @@ import tech.neatnet.core.rule.engine.domain.Rule;
 
 import java.util.UUID;
 
-public interface DecisionTreeRepository extends MongoRepository<Rule, UUID> {
+interface DecisionTreeRepository extends MongoRepository<Rule, UUID> {
 }
