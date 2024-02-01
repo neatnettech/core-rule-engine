@@ -5,3 +5,7 @@ spring:
       username: sa
       password: sa
       authentication-database: admin
+
+cache:
+  rules:
+    name: rules

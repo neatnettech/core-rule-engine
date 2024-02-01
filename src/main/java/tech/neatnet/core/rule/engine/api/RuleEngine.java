@@ -1,20 +1,13 @@
 package tech.neatnet.core.rule.engine.api;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import tech.neatnet.core.rule.engine.domain.Condition;
-import tech.neatnet.core.rule.engine.domain.Metadata;
-import tech.neatnet.core.rule.engine.domain.Rule;
-import tech.neatnet.core.rule.engine.domain.RuleExecutionResult;
-import tech.neatnet.core.rule.engine.domain.TreeExecutionResult;
+import tech.neatnet.core.rule.engine.domain.*;
 
+import java.time.Instant;
+import java.util.*;
+
+@Slf4j
 @Service
 public class RuleEngine {
 
@@ -24,9 +17,11 @@ public class RuleEngine {
   public RuleEngine(CoreRuleEngine coreRuleEngine, RuleCache ruleCache) {
     this.coreRuleEngine = coreRuleEngine;
     this.rules = ruleCache.getAllRules();
+    log.debug("RuleEngine initialized with {} rules", rules.size());
   }
 
   public Optional<List<RuleExecutionResult>> evaluateRules(Map<String, Object> inputVariables) {
+    log.debug("Evaluating rules with input variables: {}", inputVariables);
     List<RuleExecutionResult> results = new ArrayList<>();
 
     for (Rule rule : rules) {
@@ -51,11 +46,13 @@ public class RuleEngine {
       results.add(result);
     }
 
+    log.debug("Finished evaluating rules. Results: {}", results);
     return Optional.of(results);
   }
 
   public List<TreeExecutionResult> evaluateMultipleDecisionTrees(
       Map<String, Object> inputVariables) {
+    log.debug("Evaluating multiple decision trees with input variables: {}", inputVariables);
     List<TreeExecutionResult> results = new ArrayList<>();
     for (Rule root : rules) {
       root.getConditions().stream()
@@ -65,16 +62,19 @@ public class RuleEngine {
           .map(condition -> evaluateDecisionTree(inputVariables, condition, root))
           .forEach(results::add);
     }
+    log.debug("Finished evaluating multiple decision trees. Results: {}", results);
     return results;
   }
 
   private TreeExecutionResult evaluateDecisionTree(Map<String, Object> inputVariables,
       Condition root, Rule rule) {
+    log.debug("Evaluating decision tree with input variables: {}", inputVariables);
     if (root.isLeaf()) {
       Map<String, Object> results = new HashMap<>();
       coreRuleEngine.executeAction(root.getAction(), inputVariables)
           .ifPresent(o -> results.put("result", o));
 
+      log.debug("Finished evaluating decision tree. Results: {}", results);
       return TreeExecutionResult
           .builder()
           .rule(rule)

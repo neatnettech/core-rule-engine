@@ -21,26 +21,26 @@ class RuleCacheImpl implements RuleCache {
     @Override
     @Cacheable(value = "rules", key = "'allRules'")
     public Collection<Rule> getAllRules() {
-        log.info("Loading all Rules from DB");
+        log.debug("Loading all Rules from DB");
         return ruleRepository.findAll();
     }
 
     @Override
     @CacheEvict(value = "rules", allEntries = true)
     public void reloadRules() {
-        log.info("Reloading all Rules from DB");
+        log.debug("Reloading all Rules from DB");
         getAllRules();
     }
 
     @Override
     public Collection<Rule> getAllDecisionTrees() {
-        log.info("Loading all Decision Trees from DB");
+        log.debug("Loading all Decision Trees from DB");
         return ruleRepository.findAll();
     }
 
     @Override
     public void reloadDecisionTrees() {
-        log.info("Reloading all Decision Trees from DB");
+        log.debug("Reloading all Decision Trees from DB");
         getAllDecisionTrees();
     }
 
