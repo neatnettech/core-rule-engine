@@ -24,6 +24,13 @@ class RuleEngineAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
+  public RuleEngineClient ruleEngineClient(RuleRepository ruleRepository) {
+    log.debug("Creating RuleEngineClient bean");
+    return new RuleEngineClient(ruleRepository);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
   public RuleCache ruleMatrixCache(RuleRepository ruleRepository) {
     log.debug("Creating RuleCache bean");
     return new RuleCacheImpl(ruleRepository);
