@@ -2,7 +2,7 @@ package tech.neatnet.core.rule.engine.domain;
 
 public enum RuleCategory implements BaseRuleCategory {
 
-  DUMMY_SIGNAL;
+  DEFAULT;
 
   @Override
   public String getName() {

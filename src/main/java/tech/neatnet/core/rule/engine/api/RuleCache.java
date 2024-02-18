@@ -9,17 +9,17 @@ import java.util.Collection;
 
 public interface RuleCache {
 
-    @Cacheable(value = "rules")
-    Collection<Rule> getAllRules();
+    @Cacheable(value = "ruleMatrices")
+    Collection<Rule> getAllMatrices();
+
+    @Cacheable(value = "ruleTrees")
+    Collection<Rule> getAllTrees();
 
     @Scheduled(fixedDelay = 60000)
-    @CacheEvict(value = "rules", allEntries = true)
-    void reloadRules();
-
-    @Cacheable(value = "decisionTrees")
-    Collection<Rule> getAllDecisionTrees();
+    @CacheEvict(value = "ruleMatrices", allEntries = true)
+    void reloadMatrices();
 
     @Scheduled(fixedDelay = 60000)
-    @CacheEvict(value = "decisionTrees", allEntries = true)
-    void reloadDecisionTrees();
+    @CacheEvict(value = "ruleTrees", allEntries = true)
+    void reloadTrees();
 }

@@ -28,7 +28,8 @@ public class Rule implements Serializable {
   private int version;
   private String name;
   private String description;
-  private RuleCategory category;
+  private BaseRuleCategory category;
+  private RuleType ruleType;
   private HitPolicy hitPolicy;
   private List<Condition> conditions;
   private Map<String, Object> results;
