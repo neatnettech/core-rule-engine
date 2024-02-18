@@ -71,7 +71,7 @@ class RuleEngine {
                     .map(condition ->
                             {
                                 log.debug("current condition: {}", condition);
-                                return evaluateDecisionTree(inputVariables, condition, root);
+                                return evaluateDecisionTree(inputVariables, condition, root, new ArrayList<>());
                             }
                     )
                     .forEach(results::add);
@@ -86,18 +86,19 @@ class RuleEngine {
     }
 
     private TreeExecutionResult evaluateDecisionTree(Map<String, Object> inputVariables,
-                                                     Condition root, Rule rule) {
+                                                     Condition root, Rule rule, List<Condition> executedNodes) {
+        executedNodes.add(root);
         if (root.isLeaf()) {
             Map<String, Object> results = new HashMap<>();
             coreRuleEngine.executeAction(root.getAction(), inputVariables)
                     .ifPresent(o -> results.put("result", o));
-
             log.debug("Finished evaluating decision tree. Results: {}", results);
             return TreeExecutionResult
                     .builder()
                     .rule(rule)
                     .condition(root)
                     .results(results)
+                    .executedNodes(new ArrayList<>(executedNodes))
                     .build();
         }
         log.debug("Evaluating condition: {}", root.getCondition());
@@ -108,6 +109,6 @@ class RuleEngine {
             nextCondition = root.getFalseBranch();
         }
 
-        return evaluateDecisionTree(inputVariables, nextCondition, rule);
+        return evaluateDecisionTree(inputVariables, nextCondition, rule, executedNodes);
     }
 }
