@@ -2,7 +2,6 @@ package tech.neatnet.core.rule.engine.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import tech.neatnet.core.rule.engine.domain.BaseRuleCategory;
 import tech.neatnet.core.rule.engine.domain.Rule;
 import tech.neatnet.core.rule.engine.domain.RuleExecutionResult;
 

@@ -32,8 +32,8 @@ public class Rule implements Serializable {
     private boolean active;
     private String name;
     private String description;
-    // TODO: fix fucking converters, or force client to implement
-    private String ruleCategory;
+    private BaseRuleCategory ruleCategory;
+    private BaseRuleSubCategory ruleSubCategory;
     private RuleType ruleType;
     private List<Condition> conditions;
     private Map<String, Object> results;

@@ -31,7 +31,7 @@ class RuleEngine {
                 .filter(rule -> rule.getRuleCategory().equals(ruleCategory))
                 .filter(rule -> rule.getRuleType() == RuleType.DECISION_TABLE)
                 .forEach(rule -> {
-                    results.add(executeRuleWithSingleResult(inputVariables, rule));
+                    results.add(evaluateRule(inputVariables, rule));
                 });
 
         log.debug("Finished evaluating rules. Results: {}", results);
@@ -43,7 +43,7 @@ class RuleEngine {
         return results;
     }
 
-    private RuleExecutionResult executeRuleWithSingleResult(Map<String, Object> inputVariables, Rule rule) {
+    private RuleExecutionResult evaluateRule(Map<String, Object> inputVariables, Rule rule) {
         long singleRuleStartTime = System.nanoTime();
         boolean allConditionsMet = rule.getConditions().stream()
                 .allMatch(condition -> coreRuleEngine.evaluateCondition(condition.getCondition(), mergeInputVariables(inputVariables, condition.getInValues())));
@@ -68,6 +68,13 @@ class RuleEngine {
 
         log.debug("Evaluating multiple decision trees with input variables: {}", inputVariables);
         List<TreeExecutionResult> results = new ArrayList<>();
+
+        rules.stream()
+                .filter(rule -> rule.getRuleCategory().equals(ruleCategory))
+                .filter(rule -> rule.getRuleType() == RuleType.DECISION_TREE)
+                .forEach(rule -> {
+                    results.add(evaluateTree(inputVariables, rule.getConditions().get(0), rule, new ArrayList<>()));
+                });
 
         log.debug("Finished evaluating multiple decision trees. Results: {}", results);
 
