@@ -21,7 +21,7 @@ class RuleEngine {
         log.debug("RuleEngine initialized with {} rule(s)", rules.size());
     }
 
-    public List<RuleExecutionResult> evaluateRules(Map<String, Object> inputVariables, BaseRuleCategory ruleCategory) {
+    public List<RuleExecutionResult> evaluateRules(Map<String, Object> inputVariables, String ruleCategory) {
         long startTime = System.nanoTime();
 
         log.debug("Evaluating rules with input variables: {}", inputVariables);

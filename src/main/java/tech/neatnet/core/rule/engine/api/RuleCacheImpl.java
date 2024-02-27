@@ -13,7 +13,7 @@ import java.util.Collection;
 class RuleCacheImpl implements RuleCache {
 
     private final RuleRepository ruleRepository;
-
+    // TODO: Reload cache when new rules are added to the database
     public RuleCacheImpl(RuleRepository ruleRepository) {
         this.ruleRepository = ruleRepository;
     }

@@ -21,7 +21,7 @@ public class RuleEngineClient {
         this.ruleRepository = ruleRepository;
     }
 
-    public List<RuleExecutionResult> evaluateRules(Map<String, Object> inputVariables, BaseRuleCategory ruleCategory) {
+    public List<RuleExecutionResult> evaluateRules(Map<String, Object> inputVariables, String ruleCategory) {
         log.debug("Evaluating rules with input variables: {}", inputVariables);
         return ruleEngine.evaluateRules(inputVariables, ruleCategory);
     }
