@@ -2,10 +2,10 @@ package tech.neatnet.core.rule.engine.domain;
 
 public enum RuleCategory implements BaseRuleCategory {
 
-  DEFAULT;
+    DEFAULT;
 
-  @Override
-  public String getName() {
-    return name();
-  }
+    @Override
+    public String getName() {
+        return name();
+    }
 }

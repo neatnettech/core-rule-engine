@@ -6,11 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-import tech.neatnet.core.rule.engine.converters.GenericMongoCategoryConverter;
-
-import java.util.Arrays;
 
 @Slf4j
 @Configuration
@@ -19,35 +15,31 @@ import java.util.Arrays;
 @EnableMongoRepositories(basePackageClasses = RuleRepository.class)
 class RuleEngineAutoConfiguration {
 
-  @Bean
-  @ConditionalOnMissingBean
-  public CoreRuleEngine coreRuleEngine() {
-    log.debug("Creating CoreRuleEngine bean");
-    return new CoreRuleEngine();
-  }
-  @Bean
-  @ConditionalOnMissingBean
-  public RuleCache ruleMatrixCache(RuleRepository ruleRepository) {
-    log.debug("Creating RuleCache bean");
-    return new RuleCacheImpl(ruleRepository);
-  }
-  @Bean
-  @ConditionalOnMissingBean
-  public RuleEngine ruleEngine(CoreRuleEngine coreRuleEngine, RuleCache ruleCache) {
-    log.debug("Creating RuleEngine bean");
-    return new RuleEngine(coreRuleEngine, ruleCache);
-  }
-  @Bean
-  public RuleEngineClient ruleEngineClient(RuleRepository ruleRepository, RuleEngine ruleEngine) {
-    log.debug("Creating RuleEngineClient bean");
-    return new RuleEngineClient(ruleRepository, ruleEngine);
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public CoreRuleEngine coreRuleEngine() {
+        log.debug("Creating CoreRuleEngine bean");
+        return new CoreRuleEngine();
+    }
 
-  @Bean
-  public MongoCustomConversions customConversions() {
-    return new MongoCustomConversions(Arrays.asList(
-            new GenericMongoCategoryConverter.CategoryToDBConverter(),
-            new GenericMongoCategoryConverter.DBToCategoryConverter()
-    ));
-  }
+    @Bean
+    @ConditionalOnMissingBean
+    public RuleCache ruleMatrixCache(RuleRepository ruleRepository) {
+        log.debug("Creating RuleCache bean");
+        return new RuleCacheImpl(ruleRepository);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RuleEngine ruleEngine(CoreRuleEngine coreRuleEngine, RuleCache ruleCache) {
+        log.debug("Creating RuleEngine bean");
+        return new RuleEngine(coreRuleEngine, ruleCache);
+    }
+
+    @Bean
+    public RuleEngineClient ruleEngineClient(RuleEngine ruleEngine, RuleRepository ruleRepository) {
+        log.debug("Creating RuleEngineClient bean");
+        return new RuleEngineClient(ruleEngine, ruleRepository);
+    }
+
 }

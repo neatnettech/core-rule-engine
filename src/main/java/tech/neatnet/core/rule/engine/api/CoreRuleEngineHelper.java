@@ -9,7 +9,7 @@ class CoreRuleEngineHelper {
     }
 
     static Map<String, Object> mergeInputVariables(Map<String, Object> inputVariables, List<Object> inValues) {
-        if (inValues != null && !inValues.isEmpty()){
+        if (inValues != null && !inValues.isEmpty()) {
             inputVariables.put("inValues", inValues);
         }
         return inputVariables;

@@ -13,8 +13,8 @@ import java.util.Map;
 @AllArgsConstructor
 public class Metadata {
 
-  private Map<String, Object> inputVariables;
-  private long startTimeNanos;
-  private long endTimeNanos;
-  private boolean failed;
+    private Map<String, Object> inputVariables;
+    private long startTimeNanos;
+    private long endTimeNanos;
+    private boolean failed;
 }

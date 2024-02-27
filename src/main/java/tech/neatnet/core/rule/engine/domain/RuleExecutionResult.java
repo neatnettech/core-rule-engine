@@ -13,9 +13,13 @@ import java.util.Map;
 @AllArgsConstructor
 public class RuleExecutionResult {
 
-  private Metadata metadata;
-  private Rule rule;
-  private Map<String, Object> results;
+    private Metadata metadata;
+    private Rule rule;
+    private Map<String, Object> results;
+
+    public void addResult(String key, Object value) {
+        results.put(key, value);
+    }
 }
 
 

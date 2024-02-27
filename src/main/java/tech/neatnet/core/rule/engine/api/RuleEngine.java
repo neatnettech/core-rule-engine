@@ -13,44 +13,26 @@ import static tech.neatnet.core.rule.engine.api.CoreRuleEngineHelper.mergeInputV
 class RuleEngine {
 
     private final CoreRuleEngine coreRuleEngine;
-    private final Collection<Rule> matrices;
-
-    private final Collection<Rule> trees;
+    private final Collection<Rule> rules;
 
     public RuleEngine(CoreRuleEngine coreRuleEngine, RuleCache ruleCache) {
         this.coreRuleEngine = coreRuleEngine;
-        this.matrices = ruleCache.getAllMatrices();
-        this.trees = ruleCache.getAllTrees();
-        log.debug("RuleEngine initialized with \n{} matrice(s)\n{} tree(s)", matrices.size(), trees.size());
+        this.rules = ruleCache.getAllRules();
+        log.debug("RuleEngine initialized with {} rule(s)", rules.size());
     }
 
-    public List<RuleExecutionResult> evaluateRules(Map<String, Object> inputVariables) {
+    public List<RuleExecutionResult> evaluateRules(Map<String, Object> inputVariables, BaseRuleCategory ruleCategory) {
         long startTime = System.nanoTime();
 
         log.debug("Evaluating rules with input variables: {}", inputVariables);
         List<RuleExecutionResult> results = new ArrayList<>();
 
-        for (Rule rule : matrices) {
-            long singleRuleStartTime = System.nanoTime();
-            boolean allConditionsMet = rule.getConditions().stream()
-                    .allMatch(condition -> coreRuleEngine.evaluateCondition(condition.getCondition(), mergeInputVariables(inputVariables, condition.getInValues())));
-            long singleRuleEndTime = System.nanoTime();
-
-            Map<String, Object> ruleResults =
-                    allConditionsMet ? rule.getResults() : Collections.emptyMap();
-
-            RuleExecutionResult result = RuleExecutionResult.builder()
-                    .metadata(Metadata.builder()
-                            .inputVariables(new HashMap<>(inputVariables))
-                            .startTimeNanos(singleRuleStartTime)
-                            .endTimeNanos(singleRuleEndTime)
-                            .build())
-                    .rule(rule)
-                    .results(ruleResults)
-                    .build();
-
-            results.add(result);
-        }
+        rules.stream()
+                .filter(rule -> rule.getRuleCategory().equals(ruleCategory))
+                .filter(rule -> rule.getRuleType() == RuleType.DECISION_TABLE)
+                .forEach(rule -> {
+                    results.add(executeRuleWithSingleResult(inputVariables, rule));
+                });
 
         log.debug("Finished evaluating rules. Results: {}", results);
 
@@ -61,21 +43,32 @@ class RuleEngine {
         return results;
     }
 
-    public List<TreeExecutionResult> evaluateMultipleDecisionTrees(Map<String, Object> inputVariables) {
+    private RuleExecutionResult executeRuleWithSingleResult(Map<String, Object> inputVariables, Rule rule) {
+        long singleRuleStartTime = System.nanoTime();
+        boolean allConditionsMet = rule.getConditions().stream()
+                .allMatch(condition -> coreRuleEngine.evaluateCondition(condition.getCondition(), mergeInputVariables(inputVariables, condition.getInValues())));
+        long singleRuleEndTime = System.nanoTime();
+
+        Map<String, Object> ruleResults =
+                allConditionsMet ? rule.getResults() : Collections.emptyMap();
+
+        return RuleExecutionResult.builder()
+                .metadata(Metadata.builder()
+                        .inputVariables(new HashMap<>(inputVariables))
+                        .startTimeNanos(singleRuleStartTime)
+                        .endTimeNanos(singleRuleEndTime)
+                        .build())
+                .rule(rule)
+                .results(ruleResults)
+                .build();
+    }
+
+    public List<TreeExecutionResult> evaluateDecisionTree(Map<String, Object> inputVariables, BaseRuleCategory ruleCategory) {
         long startTime = System.nanoTime();
 
         log.debug("Evaluating multiple decision trees with input variables: {}", inputVariables);
         List<TreeExecutionResult> results = new ArrayList<>();
-        for (Rule root : trees) {
-            root.getConditions().stream()
-                    .map(condition ->
-                            {
-                                log.debug("current condition: {}", condition);
-                                return evaluateDecisionTree(inputVariables, condition, root, new ArrayList<>());
-                            }
-                    )
-                    .forEach(results::add);
-        }
+
         log.debug("Finished evaluating multiple decision trees. Results: {}", results);
 
         long endTime = System.nanoTime();
@@ -85,30 +78,30 @@ class RuleEngine {
         return results;
     }
 
-    private TreeExecutionResult evaluateDecisionTree(Map<String, Object> inputVariables,
-                                                     Condition root, Rule rule, List<Condition> executedNodes) {
-        executedNodes.add(root);
-        if (root.isLeaf()) {
+    private TreeExecutionResult evaluateTree(Map<String, Object> inputVariables,
+                                             Condition condition, Rule rule, List<Condition> executedNodes) {
+        executedNodes.add(condition);
+        if (condition.isLeaf()) {
             Map<String, Object> results = new HashMap<>();
-            coreRuleEngine.executeAction(root.getAction(), inputVariables)
+            coreRuleEngine.executeAction(condition.getAction(), inputVariables)
                     .ifPresent(o -> results.put("result", o));
             log.debug("Finished evaluating decision tree. Results: {}", results);
             return TreeExecutionResult
                     .builder()
                     .rule(rule)
-                    .condition(root)
+                    .condition(condition)
                     .results(results)
                     .executedNodes(new ArrayList<>(executedNodes))
                     .build();
         }
-        log.debug("Evaluating condition: {}", root.getCondition());
+        log.debug("Evaluating condition: {}", condition.getCondition());
         Condition nextCondition;
-        if (coreRuleEngine.evaluateCondition(root.getCondition(), mergeInputVariables(inputVariables, root.getInValues()))) {
-            nextCondition = root.getTrueBranch();
+        if (coreRuleEngine.evaluateCondition(condition.getCondition(), mergeInputVariables(inputVariables, condition.getInValues()))) {
+            nextCondition = condition.getTrueBranch();
         } else {
-            nextCondition = root.getFalseBranch();
+            nextCondition = condition.getFalseBranch();
         }
 
-        return evaluateDecisionTree(inputVariables, nextCondition, rule, executedNodes);
+        return evaluateTree(inputVariables, nextCondition, rule, executedNodes);
     }
 }

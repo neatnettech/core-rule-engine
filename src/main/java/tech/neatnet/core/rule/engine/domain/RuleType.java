@@ -1,6 +1,6 @@
 package tech.neatnet.core.rule.engine.domain;
 
 public enum RuleType {
-    MATRIX, TREE
+    DECISION_TABLE, DECISION_TREE
 
 }
