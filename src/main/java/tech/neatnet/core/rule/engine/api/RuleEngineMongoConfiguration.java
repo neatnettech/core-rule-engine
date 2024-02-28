@@ -38,7 +38,6 @@ public class RuleEngineMongoConfiguration extends AbstractMongoClientConfigurati
   @Override
   public MongoCustomConversions customConversions() {
     List<Converter<?, ?>> converters = new ArrayList<>();
-    // Add your converters here
     converters.add(new SpecificMongoConverters.DBToCategoryConverter());
     converters.add(new SpecificMongoConverters.CategoryToDBConverter());
     converters.add(new SpecificMongoConverters.SubCategoryToDBConverter());

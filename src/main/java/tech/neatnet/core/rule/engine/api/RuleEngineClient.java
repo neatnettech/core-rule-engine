@@ -28,11 +28,21 @@ public class RuleEngineClient {
         return ruleEngine.evaluate(inputVariables, ruleCategory, subCategory, hitPolicy);
     }
 
-//    public List<RuleExecutionResult> evaluateRules(Map<String, Object> inputVariables, BaseRuleCategory ruleCategory, BaseRuleSubCategory subCategory) throws RuleEngineClientProcessingException {
-//        log.debug("Evaluating rules with input variables: {}, ruleCategory: {}, subCategory: {}, defaultHitPolicy: {}", inputVariables, ruleCategory, subCategory, defaultHitPolicy);
-//        validateInputs(inputVariables, ruleCategory, subCategory, defaultHitPolicy);
-//        return ruleEngine.evaluate(inputVariables, ruleCategory, subCategory, defaultHitPolicy);
-//    }
+    public List<RuleExecutionResult> evaluateRules(Map<String, Object> inputVariables, BaseRuleCategory ruleCategory, BaseRuleSubCategory subCategory) throws RuleEngineClientProcessingException {
+        log.debug("Evaluating rules with input variables: {}, ruleCategory: {}, subCategory: {}, defaultHitPolicy: {}", inputVariables, ruleCategory, subCategory, defaultHitPolicy);
+        validateInputs(inputVariables, ruleCategory, subCategory, defaultHitPolicy);
+        return ruleEngine.evaluate(inputVariables, ruleCategory, subCategory, defaultHitPolicy);
+    }
+    public List<TreeExecutionResult> evaluateTree(Map<String, Object> inputVariables, BaseRuleCategory ruleCategory, BaseRuleSubCategory subCategory, HitPolicy hitPolicy) throws RuleEngineClientProcessingException {
+        log.debug("Evaluating tree with input variables: {}, ruleCategory: {}, subCategory: {}, hitPolicy: {}", inputVariables, ruleCategory, subCategory, hitPolicy);
+        validateInputs(inputVariables, ruleCategory, subCategory, hitPolicy);
+        return ruleEngine.evaluateDecisionTree(inputVariables, ruleCategory, subCategory, hitPolicy);
+    }
+    public List<TreeExecutionResult> evaluateTree(Map<String, Object> inputVariables, BaseRuleCategory ruleCategory, BaseRuleSubCategory subCategory) throws RuleEngineClientProcessingException {
+        log.debug("Evaluating tree with input variables: {}, ruleCategory: {}, subCategory: {}, hitPolicy: {}", inputVariables, ruleCategory, subCategory, defaultHitPolicy);
+        validateInputs(inputVariables, ruleCategory, subCategory, defaultHitPolicy);
+        return ruleEngine.evaluateDecisionTree(inputVariables, ruleCategory, subCategory, defaultHitPolicy);
+    }
     private void validateInputs(Map<String, Object> inputVariables, BaseRuleCategory ruleCategory, BaseRuleSubCategory subCategory, HitPolicy hitPolicy) throws RuleEngineClientProcessingException {
         if (inputVariables == null || inputVariables.isEmpty()) {
             throw new RuleEngineClientProcessingException("Input variables cannot be empty");

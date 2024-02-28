@@ -71,7 +71,7 @@ public class SpecificMongoConverters {
             try {
                 String[] split = source.split(":");
                 Class<?> clazz = Class.forName(split[0]);
-                if (BaseRuleCategory.class.isAssignableFrom(clazz)) {
+                if (BaseRuleSubCategory.class.isAssignableFrom(clazz)) {
                     return (BaseRuleSubCategory) clazz.getMethod("valueOf", String.class).invoke(null, split[1]);
                 }
             } catch (Exception e) {

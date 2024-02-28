@@ -18,6 +18,7 @@ class RuleEngine {
     public RuleEngine(CoreRuleEngine coreRuleEngine, RuleCache ruleCache) {
         this.coreRuleEngine = coreRuleEngine;
         this.rules = ruleCache.getAllRules();
+        rules.forEach(rule -> log.debug("Rule: {}", rule));
         log.debug("RuleEngine initialized with {} rule(s)", rules.size());
     }
 
@@ -98,14 +99,10 @@ class RuleEngine {
 
         while (ruleIterator.hasNext()) {
             Rule rule = ruleIterator.next();
-
             for (Condition condition : rule.getConditions()) {
+                log.debug("Evaluating decision tree with condition: {}", condition);
                 TreeExecutionResult tet = evaluateTree(inputVariables, condition, rule, new ArrayList<>());
                 results.add(tet);
-                if (hitPolicy == HitPolicy.FIRST && tet.isRuleCriteriaMet()) {
-                    log.debug("Hit policy is FIRST. Stopping evaluation of decision trees");
-                    break;
-                }
             }
         }
 
