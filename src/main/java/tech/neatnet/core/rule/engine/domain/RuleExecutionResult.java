@@ -15,11 +15,8 @@ public class RuleExecutionResult {
 
     private Metadata metadata;
     private Rule rule;
+    private boolean ruleCriteriaMet;
     private Map<String, Object> results;
-
-    public void addResult(String key, Object value) {
-        results.put(key, value);
-    }
 }
 
 

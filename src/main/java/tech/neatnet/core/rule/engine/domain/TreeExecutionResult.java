@@ -15,6 +15,7 @@ import java.util.Map;
 public class TreeExecutionResult {
     private Rule rule;
     private Condition condition;
+    private boolean ruleCriteriaMet;
     private Map<String, Object> results;
     private List<Condition> executedNodes;
 }
