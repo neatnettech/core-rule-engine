@@ -3,49 +3,33 @@ package tech.neatnet.core.rule.engine.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tech.neatnet.core.rule.engine.domain.*;
-import tech.neatnet.core.rule.engine.exceptions.RuleEngineClientProcessingException;
 
 import java.util.*;
 
 import static tech.neatnet.core.rule.engine.api.CoreRuleEngineHelper.mergeInputVariables;
-import static tech.neatnet.core.rule.engine.exceptions.RuleEngineClientProcessingException.ERR_MSG_EMPTY_INPUT_VARIABLES;
 
 @Slf4j
 @Service
 class RuleEngine {
     private final CoreRuleEngine coreRuleEngine;
-    private final Collection<Rule> rules;
+    private final RuleCache ruleCache;
+
     public RuleEngine(CoreRuleEngine coreRuleEngine, RuleCache ruleCache) {
         this.coreRuleEngine = coreRuleEngine;
-        this.rules = ruleCache.getAllRules();
-        rules.forEach(rule -> log.debug("Rule: {}", rule));
-        log.debug("RuleEngine initialized with {} rule(s)", rules.size());
+        this.ruleCache = ruleCache;
+        log.debug("RuleEngine initialized");
     }
 
-    public List<RuleExecutionResult> evaluate(Map<String, Object> inputVariables, BaseRuleCategory ruleCategory, BaseRuleSubCategory subCategory, HitPolicy hitPolicy) {
+    public List<RuleExecutionResult> evaluateMatrices(Map<String, Object> inputVariables, BaseRuleCategory ruleCategory, BaseRuleSubCategory subCategory, HitPolicy hitPolicy) {
         long startTime = System.nanoTime();
 
         log.debug("Processing with input variables: {}, ruleCategory: {}, subCategory: {}, hitPolicy: {}", inputVariables, ruleCategory, subCategory, hitPolicy);
         List<RuleExecutionResult> results = new ArrayList<>();
 
-        Iterator<Rule> ruleIterator = rules.stream()
-                .filter(rule -> {
-                    log.debug("Evaluating category {} {}", ruleCategory, rule.getRuleCategory());
-                    log.debug("category filtering condition met {}", rule.getRuleCategory() == ruleCategory);
-                    return rule.getRuleCategory() == ruleCategory;})
-                .filter(rule -> {
-                    log.debug("Evaluating sub category {} {}", subCategory, rule.getRuleSubCategory());
-                    log.debug("sub category filtering condition met {}", rule.getRuleSubCategory() == subCategory);
-                    return rule.getRuleSubCategory() == subCategory;})
-                .filter(rule -> {
-                    log.debug("Evaluating decision table {} {}", rule.getRuleType(), RuleType.DECISION_TABLE);
-                    log.debug("decision table filtering condition met {}", rule.getRuleType() == RuleType.DECISION_TABLE);
-                    return rule.getRuleType() == RuleType.DECISION_TABLE;})
-                .iterator();
+        Collection<Rule> filteredRules = ruleCache.findRules(ruleCategory, subCategory);
 
-        while (ruleIterator.hasNext()) {
-            Rule rule = ruleIterator.next();
-            RuleExecutionResult ruleExecutionResult = evaluateRule(inputVariables, rule);
+        for(Rule rule : filteredRules) {
+            RuleExecutionResult ruleExecutionResult = evaluate(inputVariables, rule);
             results.add(ruleExecutionResult);
             if (hitPolicy == HitPolicy.FIRST && ruleExecutionResult.isRuleCriteriaMet()) {
                 log.debug("Hit policy is FIRST. Stopping evaluation of rules");
@@ -62,7 +46,7 @@ class RuleEngine {
         return results;
     }
 
-    private RuleExecutionResult evaluateRule(Map<String, Object> inputVariables, Rule rule) {
+    private RuleExecutionResult evaluate(Map<String, Object> inputVariables, Rule rule) {
         long singleRuleStartTime = System.nanoTime();
         boolean allConditionsMet = rule.getConditions().stream()
                 .allMatch(condition -> coreRuleEngine.evaluateCondition(condition.getCondition(), mergeInputVariables(inputVariables, condition.getInValues())));
@@ -85,24 +69,22 @@ class RuleEngine {
                 .build();
     }
 
-    public List<TreeExecutionResult> evaluateDecisionTree(Map<String, Object> inputVariables, BaseRuleCategory ruleCategory, BaseRuleSubCategory subCategory, HitPolicy hitPolicy) {
+    public List<TreeExecutionResult> evaluateTrees(Map<String, Object> inputVariables, BaseRuleCategory ruleCategory, BaseRuleSubCategory subCategory, HitPolicy hitPolicy) {
         long startTime = System.nanoTime();
 
         log.debug("Evaluating multiple decision trees with input variables: {}", inputVariables);
         List<TreeExecutionResult> results = new ArrayList<>();
 
-        Iterator<Rule> ruleIterator = rules.stream()
-                .filter(rule -> rule.getRuleCategory().equals(ruleCategory))
-                .filter(rule -> rule.getRuleType() == RuleType.DECISION_TREE)
-                .filter(rule -> rule.getRuleSubCategory() == subCategory)
-                .iterator();
+        Collection<Rule> filteredRules = ruleCache.findRules(ruleCategory, subCategory);
 
-        while (ruleIterator.hasNext()) {
-            Rule rule = ruleIterator.next();
+        for (Rule rule : filteredRules) {
             for (Condition condition : rule.getConditions()) {
-                log.debug("Evaluating decision tree with condition: {}", condition);
-                TreeExecutionResult tet = evaluateTree(inputVariables, condition, rule, new ArrayList<>());
+                TreeExecutionResult tet = evaluateSingleTree(inputVariables, condition, rule, new ArrayList<>());
                 results.add(tet);
+                if (hitPolicy == HitPolicy.FIRST && tet.isRuleCriteriaMet()) {
+                    log.debug("Hit policy is FIRST. Stopping evaluation of decision trees");
+                    break;
+                }
             }
         }
 
@@ -115,13 +97,13 @@ class RuleEngine {
         return results;
     }
 
-    private TreeExecutionResult evaluateTree(Map<String, Object> inputVariables,
-                                             Condition condition, Rule rule, List<Condition> executedNodes) {
+    private TreeExecutionResult evaluateSingleTree(Map<String, Object> inputVariables,
+                                                   Condition condition, Rule rule, List<Condition> executedNodes) {
         executedNodes.add(condition);
         if (condition.isLeaf()) {
             Map<String, Object> results = new HashMap<>();
-            coreRuleEngine.executeAction(condition.getAction(), inputVariables)
-                    .ifPresent(o -> results.put("result", o));
+            Optional<Object> o = coreRuleEngine.executeAction(condition.getAction(), inputVariables);
+            o.ifPresent(o1 -> results.put(condition.getAction(), o1));
             log.debug("Finished evaluating decision tree. Results: {}", results);
             return TreeExecutionResult
                     .builder()
@@ -140,6 +122,6 @@ class RuleEngine {
             nextCondition = condition.getFalseBranch();
         }
 
-        return evaluateTree(inputVariables, nextCondition, rule, executedNodes);
+        return evaluateSingleTree(inputVariables, nextCondition, rule, executedNodes);
     }
 }

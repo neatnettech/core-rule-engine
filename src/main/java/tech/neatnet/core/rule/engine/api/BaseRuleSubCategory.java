@@ -1,4 +1,4 @@
-package tech.neatnet.core.rule.engine.domain;
+package tech.neatnet.core.rule.engine.api;
 
 public interface BaseRuleSubCategory {
 

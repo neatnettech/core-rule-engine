@@ -1,35 +1,40 @@
 package tech.neatnet.core.rule.engine.api;
 
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
+
 import tech.neatnet.core.rule.engine.domain.Rule;
 
 import java.util.Collection;
+
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 class RuleCacheImpl implements RuleCache {
 
-    private final RuleRepository ruleRepository;
-    // TODO: Reload cache when new rules are added to the database
-    public RuleCacheImpl(RuleRepository ruleRepository) {
-        this.ruleRepository = ruleRepository;
+    private final RuleRepositoryService ruleRepositoryService;
+
+    public RuleCacheImpl(RuleRepositoryService ruleRepositoryService) {
+        log.debug("RuleCacheImpl constructor called");
+        this.ruleRepositoryService = ruleRepositoryService;
+    }
+
+    // Method to get rules based on dynamic filtering criteria
+    @Override
+    public Collection<Rule> findRules(BaseRuleCategory baseRuleCategory, BaseRuleSubCategory baseRuleSubCategory) {
+        return ruleRepositoryService.findRulesByBaseRuleCategoryAndBaseRuleSubCategory(baseRuleCategory, baseRuleSubCategory);
+    }
+
+
+    // This method may remain the same if you still need a way to load all rules unfiltered.
+    @Override
+    public Collection<Rule> findActive() {
+        return ruleRepositoryService.findRulesByActive(true);
     }
 
     @Override
-    @Cacheable(value = "rules", key = "'allRules'")
-    public Collection<Rule> getAllRules() {
-        log.debug("Loading all matrices from DB");
-        return ruleRepository.getRulesByActive(true);
-    }
-
-    @Override
-    @CacheEvict(value = "rules", allEntries = true)
     public void reloadRules() {
-        log.debug("Reloading all Rules from DB");
-        getAllRules();
+        findActive();
     }
-
 }

@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+import tech.neatnet.core.rule.engine.api.BaseRuleCategory;
+import tech.neatnet.core.rule.engine.api.BaseRuleSubCategory;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -32,8 +34,8 @@ public class Rule implements Serializable {
     private boolean active;
     private String name;
     private String description;
-    private BaseRuleCategory ruleCategory;
-    private BaseRuleSubCategory ruleSubCategory;
+    private BaseRuleCategory baseRuleCategory;
+    private BaseRuleSubCategory baseRuleSubCategory;
     private RuleType ruleType;
     private List<Condition> conditions;
     private Map<String, Object> results;

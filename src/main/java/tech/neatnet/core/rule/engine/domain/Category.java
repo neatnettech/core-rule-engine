@@ -1,10 +1,10 @@
 package tech.neatnet.core.rule.engine.domain;
 
 import tech.neatnet.core.rule.engine.api.BaseRuleCategory;
+import tech.neatnet.core.rule.engine.api.BaseRuleSubCategory;
 
-public enum RuleCategory implements BaseRuleCategory {
-
-    DEFAULT;
+public enum Category implements BaseRuleCategory, BaseRuleSubCategory {
+    DUMMY;
 
     @Override
     public String getName() {
