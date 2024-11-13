@@ -22,30 +22,46 @@ import javax.cache.spi.CachingProvider;
 @EnableCaching
 public class CacheConfiguration {
 
+    private final CacheConfigProperties cacheConfigProperties;
+
+    public CacheConfiguration(CacheConfigProperties cacheConfigProperties) {
+        this.cacheConfigProperties = cacheConfigProperties;
+    }
+
     @Bean
     public JCacheCacheManager jCacheCacheManager() {
         CachingProvider provider = Caching.getCachingProvider();
         CacheManager cacheManager = provider.getCacheManager();
 
-        org.ehcache.config.CacheConfiguration<Object, Object> cacheConfiguration =
-                CacheConfigurationBuilder.newCacheConfigurationBuilder(Object.class, Object.class,
-                                ResourcePoolsBuilder.heap(100)) // Adjust heap size as needed
-                        .withService(CacheEventListenerConfigurationBuilder
-                                .newEventListenerConfiguration(new CacheEventLogger(), EventType.CREATED, EventType.UPDATED, EventType.REMOVED, EventType.EXPIRED)
-                                .unordered().asynchronous())
-                        .build();
+        cacheConfigProperties.getCacheConfigs().forEach(
+                cacheConfig -> createCache(cacheConfig.getName(), cacheManager, cacheConfig.getKeyType(), cacheConfig.getValueType(), cacheConfig.getHeapSize())
+        );
 
-        javax.cache.configuration.Configuration<Object, Object> jCacheConfiguration =
-                Eh107Configuration.fromEhcacheCacheConfiguration(cacheConfiguration);
-
-        cacheManager.createCache("rules", jCacheConfiguration);
+//        createCache("rules", cacheManager, Object.class, Object.class, 100);
+//        createCache("anothcOerCache", cacheManager, String.class, Integer.class, 50);
 
         return new JCacheCacheManager(cacheManager);
     }
 
-    static class CacheEventLogger implements CacheEventListener<Object, Object> {
+    private <K, V> void createCache(String cacheName, CacheManager cacheManager,
+                                    Class<K> keyType, Class<V> valueType, int heapSize) {
+        org.ehcache.config.CacheConfiguration<K, V> cacheConfiguration =
+                CacheConfigurationBuilder.newCacheConfigurationBuilder(keyType, valueType,
+                                ResourcePoolsBuilder.heap(heapSize))
+                        .withService(CacheEventListenerConfigurationBuilder
+                                .newEventListenerConfiguration(new CacheEventLogger<K, V>(), EventType.CREATED, EventType.UPDATED, EventType.REMOVED, EventType.EXPIRED)
+                                .unordered().asynchronous())
+                        .build();
+
+        javax.cache.configuration.Configuration<K, V> jCacheConfiguration =
+                Eh107Configuration.fromEhcacheCacheConfiguration(cacheConfiguration);
+
+        cacheManager.createCache(cacheName, jCacheConfiguration);
+    }
+
+    static class CacheEventLogger<K, V> implements CacheEventListener<K, V> {
         @Override
-        public void onEvent(CacheEvent<? extends Object, ? extends Object> event) {
+        public void onEvent(CacheEvent<? extends K, ? extends V> event) {
             log.info("Cache event {} for item with key {}. Old value = {}, New value = {}",
                     event.getType(), event.getKey(), event.getOldValue(), event.getNewValue());
         }

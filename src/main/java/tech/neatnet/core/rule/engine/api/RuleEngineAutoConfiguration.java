@@ -1,12 +1,10 @@
 package tech.neatnet.core.rule.engine.api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.ehcache.config.CacheConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
@@ -19,6 +17,11 @@ import java.util.List;
 @ConditionalOnProperty(name = "rule.engine.enabled", havingValue = "true", matchIfMissing = true)
 @EnableMongoRepositories(basePackageClasses = RuleRepository.class)
 class RuleEngineAutoConfiguration {
+
+    @Bean
+    public CacheConfigProperties cacheConfigProperties() {
+        return new CacheConfigProperties();
+    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -46,6 +49,7 @@ class RuleEngineAutoConfiguration {
         log.debug("Creating RuleEngineClient bean");
         return new RuleEngineClientImpl(ruleEngine, ruleRepository);
     }
+
     @Bean
     public MongoCustomConversions mongoCustomConversions() {
         List<Converter<?, ?>> converters = new ArrayList<>();

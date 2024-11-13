@@ -18,7 +18,7 @@ public class RuleRepositoryService {
         this.ruleRepository = ruleRepository;
     }
 
-    @Cacheable(value = "rules", keyGenerator = "ruleKeyGenerator")
+    @Cacheable(cacheResolver = "customCacheResolver", keyGenerator = "ruleKeyGenerator")
     public Collection<Rule> findRulesByBaseRuleCategoryAndBaseRuleSubCategory(BaseRuleCategory baseRuleCategory, BaseRuleSubCategory baseRuleSubCategory) {
         log.debug("Loading rules from DB for category: {}, subcategory: {}", baseRuleCategory, baseRuleSubCategory);
         return ruleRepository.findRulesByBaseRuleCategoryAndBaseRuleSubCategory(baseRuleCategory, baseRuleSubCategory);
