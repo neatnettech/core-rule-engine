@@ -1,1 +1,0 @@
-com.springframework.boot.autoconfigure.EnableAutoConfiguration=tech.neatnet.core.rule.engine.api.RuleEngineAutoConfiguration

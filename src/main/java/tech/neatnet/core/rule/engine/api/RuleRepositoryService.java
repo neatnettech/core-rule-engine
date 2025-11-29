@@ -3,13 +3,11 @@ package tech.neatnet.core.rule.engine.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
 import tech.neatnet.core.rule.engine.domain.Rule;
 
 import java.util.Collection;
 
 @Slf4j
-@Component
 public class RuleRepositoryService {
 
     private final RuleRepository ruleRepository;
@@ -19,9 +17,12 @@ public class RuleRepositoryService {
     }
 
     @Cacheable(cacheResolver = "customCacheResolver", keyGenerator = "ruleKeyGenerator")
-    public Collection<Rule> findRulesByBaseRuleCategoryAndBaseRuleSubCategory(BaseRuleCategory baseRuleCategory, BaseRuleSubCategory baseRuleSubCategory) {
-        log.debug("Loading rules from DB for category: {}, subcategory: {}", baseRuleCategory, baseRuleSubCategory);
-        return ruleRepository.findRulesByBaseRuleCategoryAndBaseRuleSubCategory(baseRuleCategory, baseRuleSubCategory);
+    public Collection<Rule> findRulesByBaseRuleCategoryAndBaseRuleSubCategory(
+            BaseRuleCategory baseRuleCategory, BaseRuleSubCategory baseRuleSubCategory) {
+        String categoryKey = convertCategoryToString(baseRuleCategory);
+        String subCategoryKey = convertCategoryToString(baseRuleSubCategory);
+        log.debug("Loading rules from DB for category: {}, subcategory: {}", categoryKey, subCategoryKey);
+        return ruleRepository.findRulesByBaseRuleCategoryAndBaseRuleSubCategory(categoryKey, subCategoryKey);
     }
 
     @Cacheable(value = "rules", key = "'allRules'")
@@ -34,5 +35,12 @@ public class RuleRepositoryService {
     public void reloadRules() {
         log.debug("Reloading all rules from DB");
         findRulesByActive(true);
+    }
+
+    private String convertCategoryToString(Object category) {
+        if (category == null) {
+            return null;
+        }
+        return category.getClass().getName() + ":" + ((BaseRuleCategory) category).getName();
     }
 }

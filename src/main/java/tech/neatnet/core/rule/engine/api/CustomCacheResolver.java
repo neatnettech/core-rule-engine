@@ -1,6 +1,5 @@
 package tech.neatnet.core.rule.engine.api;
 
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.CacheOperationInvocationContext;
@@ -9,7 +8,15 @@ import org.springframework.cache.interceptor.CacheResolver;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * Custom cache resolver for the Rule Engine.
+ * <p>
+ * Resolves cache names dynamically based on method invocation context.
+ * Falls back to the default "rules" cache.
+ */
 public class CustomCacheResolver implements CacheResolver {
+
+    private static final String DEFAULT_CACHE_NAME = "rules";
 
     private final CacheManager cacheManager;
 
@@ -19,22 +26,33 @@ public class CustomCacheResolver implements CacheResolver {
 
     @Override
     public Collection<? extends Cache> resolveCaches(CacheOperationInvocationContext<?> context) {
-        // Determine the cache name dynamically based on the method invocation
         String cacheName = determineCacheName(context);
-
-        // Retrieve the cache from the cache manager
         Cache cache = cacheManager.getCache(cacheName);
 
         if (cache != null) {
             return Collections.singleton(cache);
-        } else {
-            return Collections.emptyList();
         }
+
+        // Fall back to default cache
+        Cache defaultCache = cacheManager.getCache(DEFAULT_CACHE_NAME);
+        if (defaultCache != null) {
+            return Collections.singleton(defaultCache);
+        }
+
+        return Collections.emptyList();
     }
 
-    private String determineCacheName(CacheOperationInvocationContext<?> context) {
-        // Your logic to determine the cache name dynamically based on the method invocation
-        // Example: return a hardcoded cache name for demonstration purposes
-        return "rules";
+    /**
+     * Determines the cache name based on the method invocation context.
+     * <p>
+     * Override this method to implement custom cache name resolution logic.
+     *
+     * @param context the cache operation invocation context
+     * @return the cache name to use
+     */
+    protected String determineCacheName(CacheOperationInvocationContext<?> context) {
+        // Default implementation returns the standard "rules" cache
+        // Can be extended to support per-category caches, etc.
+        return DEFAULT_CACHE_NAME;
     }
 }

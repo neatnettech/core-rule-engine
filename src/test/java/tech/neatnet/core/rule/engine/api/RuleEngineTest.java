@@ -32,8 +32,8 @@ public class RuleEngineTest {
     @Test
     public void testEvaluateMatrices() {
         Map<String, Object> inputVariables = new HashMap<>();
-        BaseRuleCategory ruleCategory = Category.DUMMY;
-        BaseRuleSubCategory subCategory = Category.DUMMY;
+        BaseRuleCategory ruleCategory = Category.DEFAULT;
+        BaseRuleSubCategory subCategory = Category.DEFAULT;
         HitPolicy hitPolicy = HitPolicy.FIRST;
 
         Rule rule = new Rule();
