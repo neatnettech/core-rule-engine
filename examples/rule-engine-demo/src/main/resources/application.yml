@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: rule-engine-demo
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/rule-engine-demo
+
+server:
+  port: 8080
+
+logging:
+  level:
+    tech.neatnet: DEBUG

@@ -1,7 +1,0 @@
-spring:
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/rule-engine
-      username: sa
-      password: sa
-      authentication-database: admin

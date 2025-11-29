@@ -1,101 +1,126 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>tech.neatnet</groupId>
     <artifactId>core-rule-engine</artifactId>
+    <version>0.1.0</version>
+    <name>core-rule-engine</name>
+    <description>Simple MVEL-based rule engine for Spring Boot</description>
+
+    <properties>
+        <java.version>17</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Spring Boot 3.2.x -->
+        <spring.boot.version>3.2.0</spring.boot.version>
+
+        <!-- Core dependencies -->
+        <mvel.version>2.5.0.Final</mvel.version>
+        <ehcache.version>3.10.0</ehcache.version>
+        <cache.api.version>1.1.1</cache.api.version>
+
+        <!-- Build dependencies -->
+        <lombok.version>1.18.30</lombok.version>
+
+        <!-- Test dependencies -->
+        <testcontainers.version>1.19.3</testcontainers.version>
+    </properties>
 
     <dependencies>
+        <!-- Spring Boot Starters -->
         <dependency>
-            <artifactId>spring-boot-starter-data-mongodb</artifactId>
             <groupId>org.springframework.boot</groupId>
-            <version>${mongodb.version}</version>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+            <version>${spring.boot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+            <version>${spring.boot.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
-            <version>${spring.boot.config.processor}</version>
+            <version>${spring.boot.version}</version>
             <optional>true</optional>
         </dependency>
 
+        <!-- MVEL Expression Language -->
         <dependency>
-            <artifactId>spring-boot-starter-cache</artifactId>
-            <groupId>org.springframework.boot</groupId>
-            <version>${cache.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.ehcache/ehcache -->
-        <dependency>
-            <artifactId>ehcache</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jaxb-runtime</artifactId>
-                    <groupId>org.glassfish.jaxb</groupId>
-                </exclusion>
-            </exclusions>
-            <groupId>org.ehcache</groupId>
-            <version>${ehcache.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>cache-api</artifactId>
-            <groupId>javax.cache</groupId>
-            <version>${cache.api.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
-        <dependency>
-            <artifactId>jaxb-api</artifactId>
-            <groupId>javax.xml.bind</groupId>
-            <version>${jaxb-api.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>mvel2</artifactId>
             <groupId>org.mvel</groupId>
+            <artifactId>mvel2</artifactId>
             <version>${mvel.version}</version>
         </dependency>
+
+        <!-- EhCache -->
         <dependency>
-            <artifactId>lombok</artifactId>
+            <groupId>org.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+            <version>${ehcache.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.glassfish.jaxb</groupId>
+                    <artifactId>jaxb-runtime</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>javax.cache</groupId>
+            <artifactId>cache-api</artifactId>
+            <version>${cache.api.version}</version>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
             <groupId>org.projectlombok</groupId>
-            <optional>true</optional>
+            <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
+            <optional>true</optional>
         </dependency>
-        <dependency>
-            <artifactId>junit-jupiter-api</artifactId>
-            <groupId>org.junit.jupiter</groupId>
-            <scope>test</scope>
-            <version>${jupiter.api.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <groupId>org.mockito</groupId>
-            <scope>test</scope>
-            <version>${mockito.jupiter.version}</version>
-        </dependency>
+
+        <!-- Test Dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>${spring.boot.test.version}</version>
+            <version>${spring.boot.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>mongodb</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <description>core-rule-engine</description>
-    <groupId>tech.neatnet</groupId>
-    <modelVersion>4.0.0</modelVersion>
-    <name>core-rule-engine</name>
 
-    <properties>
-        <java.version>17</java.version>
-        <cache.version>3.1.2</cache.version>
-        <ehcache.version>3.10.0</ehcache.version>
-        <jaxb-api.version>2.3.1</jaxb-api.version>
-        <jupiter.api.version>5.10.1</jupiter.api.version>
-        <lombok.version>1.18.30</lombok.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-        <mockito.jupiter.version>5.7.0</mockito.jupiter.version>
-        <mongodb.version>3.1.5</mongodb.version>
-        <mvel.version>2.5.0.Final</mvel.version>
-        <cache.api.version>1.1.1</cache.api.version>
-        <spring.boot.test.version>2.5.5</spring.boot.test.version>
-        <spring.boot.config.processor>3.1.2</spring.boot.config.processor>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <version>0.0.1-SNAPSHOT</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
